@@ -1,6 +1,6 @@
 <template>
   <div id="wrapper">
-    <v-row class="fill-height ma-0" align="center" justify="center">
+    <v-row >
       <div elevation="0" class="coverx">
         <span class="titlex">XcelDictionary</span>
         <br />
@@ -12,7 +12,9 @@
           placeholder="type in word..."
           append-icon="mdi-magnify"
         ></v-text-field>
+      
       </div>
+     
     </v-row>
   </div>
 </template>
@@ -41,6 +43,10 @@ export default {
 .coverx {
   width: 90%;
   max-width: 600px;
+   position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .titlex {
