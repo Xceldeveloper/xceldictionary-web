@@ -14,7 +14,9 @@
           width="400px"
           v-model="searchQuery"
           prepend-inner-icon="mdi-magnify"
-          :append-icon="searchQuery == '' || searchQuery == null ? 'mdi-microphone' : null"
+          :append-icon="
+            searchQuery == '' || searchQuery == null ? 'mdi-microphone' : null
+          "
           @click:append="showMic = true"
           clearable
           single-line
@@ -58,7 +60,7 @@
 
       <v-list
         v-if="
-          searchQuery != '' || (searchQuery != null && autoCompleted.length > 0)
+          searchQuery != '' && searchQuery != null && autoCompleted.length > 0
         "
       >
         <v-list-item
@@ -73,7 +75,7 @@
           <v-list-item-content>
             <span
               :style="{
-                'font-weight': autoComplete.word == searchQuery ? 'bold' : null,
+                'font-weight': autoComplete.word == lowerQuery ? 'bold' : null,
               }"
               >{{ autoComplete.word }}</span
             >
@@ -87,12 +89,14 @@
         <v-card-text align="center" justify="center">
           <br />
           <v-btn color="#000" fab height="80px" width="80px">
-            <v-icon color="#fff" size="50px">mdi-microphone</v-icon>
+            <v-icon color="#fff" size="50px">{{
+              interimText == "" ? "mdi-microphone" : "mdi-microphone-settings"
+            }}</v-icon>
           </v-btn>
           <br />
           <br />
-          <br />
           <span>{{ interimText != "" ? interimText : "Speak Now !!!" }}</span>
+          <br />
         </v-card-text>
       </v-card>
     </v-bottom-sheet>
@@ -125,15 +129,20 @@ export default {
   watch: {
     searchQuery(val) {
       this.loading = true;
-      datamuse
-        .sug({
-          s: val,
-        })
-        .then((json) => {
-          this.autoCompleted = json;
-          this.loading = false;
-          //do it!
-        });
+
+      try {
+        datamuse
+          .sug({
+            s: val,
+          })
+          .then((json) => {
+            this.autoCompleted = json;
+            this.loading = false;
+            //do it!
+          });
+      } catch (err) {
+        console.log(err);
+      }
     },
     showMic(val) {
       if (val) {
@@ -218,6 +227,11 @@ export default {
 
     stopListening() {
       this.listener.stopListening();
+    },
+  },
+  computed: {
+    lowerQuery() {
+      return this.searchQuery.toLowerCase();
     },
   },
 };
