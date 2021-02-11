@@ -15,7 +15,11 @@
           v-model="searchQuery"
           prepend-inner-icon="mdi-magnify"
           :append-icon="
-            searchQuery == '' || searchQuery == null ? 'mdi-microphone' : null
+            searchQuery == '' ||
+            (searchQuery == null &&
+              ($device.browser.chrome || $device.browser.chrome_mobile))
+              ? 'mdi-microphone'
+              : null
           "
           @click:append="showMic = true"
           clearable
