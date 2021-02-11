@@ -1,6 +1,6 @@
 <template>
   <div id="wrapper">
-    <v-row >
+    <v-row>
       <div elevation="0" class="coverx">
         <span class="titlex">XcelDictionary</span>
         <br />
@@ -12,10 +12,12 @@
           placeholder="type in word..."
           append-icon="mdi-magnify"
         ></v-text-field>
-      
       </div>
-     
     </v-row>
+
+    <div id="trademark">
+      <a href="https://xceldeveloper.com">xceldeveloper</a>
+    </div>
   </div>
 </template>
 
@@ -43,7 +45,7 @@ export default {
 .coverx {
   width: 90%;
   max-width: 600px;
-   position: absolute;
+  position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -55,5 +57,18 @@ export default {
   display: block;
   text-align: center;
   font-size: 25px;
+}
+
+#trademark {
+  position: fixed;
+  bottom: 50px;
+  width: 100%;
+  left: 0px;
+  text-align: center;
+}
+
+#trademark a {
+  text-decoration: none;
+  color: #000;
 }
 </style>
