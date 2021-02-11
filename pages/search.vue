@@ -14,7 +14,7 @@
           width="400px"
           v-model="searchQuery"
           prepend-inner-icon="mdi-magnify"
-          :append-icon="searchQuery == '' ? 'mdi-microphone' : null"
+          :append-icon="searchQuery == '' || searchQuery == null ? 'mdi-microphone' : null"
           @click:append="showMic = true"
           clearable
           single-line
@@ -23,9 +23,7 @@
         ></v-text-field>
       </div>
 
-     
-     <v-spacer></v-spacer>
-
+      <v-spacer></v-spacer>
     </v-app-bar>
     <v-progress-linear
       v-if="loading && searchQuery != '' && searchQuery != null"
@@ -34,8 +32,15 @@
       indeterminate
       width="100%"
     />
-    <div class="search-result-cover" v-if="histories.length > 0 || autoCompleted.length > 0">
-      <v-list v-if="searchQuery == '' || searchQuery == null  && histories.length > 0">
+    <div
+      class="search-result-cover"
+      v-if="histories.length > 0 || autoCompleted.length > 0"
+    >
+      <v-list
+        v-if="
+          searchQuery == '' || (searchQuery == null && histories.length > 0)
+        "
+      >
         <v-list-item
           link
           v-for="(history, index) in histories"
@@ -51,7 +56,11 @@
         </v-list-item>
       </v-list>
 
-      <v-list v-if="searchQuery != '' || searchQuery != null  && autoCompleted.length > 0">
+      <v-list
+        v-if="
+          searchQuery != '' || (searchQuery != null && autoCompleted.length > 0)
+        "
+      >
         <v-list-item
           link
           v-for="(autoComplete, index) in autoCompleted"
@@ -73,17 +82,17 @@
       </v-list>
     </div>
 
-
     <v-bottom-sheet max-width="400px" v-model="showMic">
       <v-card>
         <v-card-text align="center" justify="center">
-          <br>
+          <br />
           <v-btn color="#000" fab height="80px" width="80px">
             <v-icon color="#fff" size="50px">mdi-microphone</v-icon>
           </v-btn>
-          <br>
-           <br>
-          <span>Pronouce Word</span>
+          <br />
+          <br />
+          <br />
+          <span>{{ interimText != "" ? interimText : "Speak Now !!!" }}</span>
         </v-card-text>
       </v-card>
     </v-bottom-sheet>
@@ -92,6 +101,7 @@
 
 <script>
 const datamuse = require("datamuse");
+import SpeechToText from "speech-to-text";
 
 export default {
   data() {
@@ -101,7 +111,11 @@ export default {
       searchQuery: "",
       autoCompleted: [],
       loading: false,
-      showMic:false
+      showMic: false,
+      interimText: "",
+      finalisedText: "",
+      language: "en-US",
+      listener: null,
     };
   },
 
@@ -116,12 +130,18 @@ export default {
           s: val,
         })
         .then((json) => {
-        
           this.autoCompleted = json;
           this.loading = false;
           //do it!
         });
-
+    },
+    showMic(val) {
+      if (val) {
+        this.startListening();
+      } else {
+        this.stopListening();
+        this.listener = null;
+      }
     },
   },
   methods: {
@@ -162,20 +182,42 @@ export default {
         return [];
       } else {
         var res = JSON.parse(contacts);
-        // var history = [];
-
-        // for (let index = 0; index < res.length; index++) {
-        //     const element = res[index];
-        //     let nh = this.getContactInfo(element)
-        //     if (nh !== undefined) {
-        //         history.push(nh)
-        //     } else {
-        //         this.deleteContact(element)
-        //     }
-        // }
 
         return res;
       }
+    },
+
+    onAnythingSaid(text) {
+      this.interimText = text;
+      this.searchQuery = this.interimText;
+    },
+    onEndEvent() {
+      //still under review
+      //   this.showMic = false;
+    },
+    onFinalised(text) {
+      (this.finalisedText = text), (this.interimText = "");
+
+      this.searchQuery = this.finalisedText;
+      this.showMic = false;
+    },
+
+    startListening() {
+      try {
+        this.listener = new SpeechToText(
+          this.onFinalised,
+          this.onEndEvent,
+          this.onAnythingSaid,
+          this.language
+        );
+        this.listener.startListening();
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    stopListening() {
+      this.listener.stopListening();
     },
   },
 };
@@ -194,7 +236,7 @@ export default {
   max-width: 750px;
   margin: 5px auto;
   overflow: auto;
-  box-shadow: 0px  1px 10px lightgrey;
+  box-shadow: 0px 1px 10px lightgrey;
   border-radius: 10px;
 }
 
