@@ -29,9 +29,9 @@ export default {
     // client.define('boss').then(function(result){
     //    console.log(JSON.stringify(result,null,2));
     // });
-    // this.$axios.$get('https://www.dictionaryapi.com/api/v3/references/collegiate/json/boy?key=0f19822e-171c-47ab-93ee-68209f7117b9').then(res=>{
-    //   console.log(JSON.stringify(res,null,4))
-    // })
+    this.$axios.$get('https://www.dictionaryapi.com/api/v3/references/collegiate/json/hello?key=0f19822e-171c-47ab-93ee-68209f7117b9').then(res=>{
+      console.log(JSON.stringify(res,null,4))
+    })
   },
 };
 </script>

@@ -52,6 +52,7 @@
           v-for="(history, index) in histories"
           :key="index"
           @click="setText(history)"
+          :to="'/' + history"
         >
           <v-list-item-icon>
             <v-icon>mdi-history</v-icon>
@@ -69,6 +70,7 @@
       >
         <v-list-item
           link
+          :to="'/' + autoComplete.word"
           v-for="(autoComplete, index) in autoCompleted"
           :key="index"
           @click="addToSearchHistory(autoComplete.word)"
